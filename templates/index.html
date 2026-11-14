@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Intake Tracker</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+
+    <div class="card">
+        <h1>💧 Hydration Tracker</h1>
+        <div class="date-subtitle">Today: {{ today }}</div>
+
+        <!-- Progress Display -->
+        <div class="stats">
+            <span>{{ total_intake }} / {{ daily_goal }} ml</span>
+            <span>{{ percentage }}%</span>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar"></div>
+        </div>
+        <div class="remaining-text">
+            {% if remaining > 0 %}
+            {{ remaining }} ml remaining to reach your goal
+            {% else %}
+            🎉 Daily hydration goal reached!
+            {% endif %}
+        </div>
+
+        <!-- Quick Add Buttons -->
+        <div class="quick-add">
+            <form action="{{ url_for('add_water') }}" method="POST">
+                <input type="hidden" name="amount" value="250">
+                <button type="submit" class="quick-btn" style="width:100%;">+250 ml</button>
+            </form>
+            <form action="{{ url_for('add_water') }}" method="POST">
+                <input type="hidden" name="amount" value="500">
+                <button type="submit" class="quick-btn" style="width:100%;">+500 ml</button>
+            </form>
+            <form action="{{ url_for('add_water') }}" method="POST">
+                <input type="hidden" name="amount" value="750">
+                <button type="submit" class="quick-btn" style="width:100%;">+750 ml</button>
+            </form>
+        </div>
+
+        <!-- Custom Amount Form -->
+        <form action="{{ url_for('add_water') }}" method="POST" class="custom-form">
+            <input type="number" name="amount" placeholder="Custom amount (ml)" min="1" max="5000" required>
+            <button type="submit" class="primary-btn">Add</button>
+        </form>
+
+        <!-- Update Daily Goal -->
+        <div class="goal-section">
+            <form action="{{ url_for('update_goal') }}" method="POST" class="goal-form">
+                <label for="daily_goal">Daily Goal (ml):</label>
+                <input type="number" id="daily_goal" name="daily_goal" value="{{ daily_goal }}" min="100" max="10000"
+                    required>
+                <button type="submit" class="secondary-btn">Save</button>
+            </form>
+        </div>
+
+        <!-- Today's Log History -->
+        <h3>Today's Logs</h3>
+        {% if logs %}
+        <ul class="log-list">
+            {% for log in logs %}
+            <li class="log-item">
+                <div>
+                    <strong>+{{ log['amount_ml'] }} ml</strong>
+                    <span class="log-time">{{ log['log_time'] }}</span>
+                </div>
+                <form action="{{ url_for('delete_log', log_id=log['id']) }}" method="POST" style="margin:0;">
+                    <button type="submit" class="delete-btn" title="Delete entry">✕</button>
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <div class="empty-msg">No water logged yet today.</div>
+        {% endif %}
+    </div>
+
+</body>
+
+</html>
